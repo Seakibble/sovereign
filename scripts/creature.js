@@ -7,14 +7,15 @@ const Creature = function (_x = 0, _y = 0) {
 
     // Creature specific properties
     creature.dead = false;
-    creature.exp = 100;
+    creature.exp = 1;
 
     creature.location = {
         x: _x,
         y: _y
     };
 
-    creature.mhp = 4;
+    creature.hitDie = "d10"
+    creature.mhp = 10;
     creature.chp = creature.mhp;
 
     creature.ac = 10;
@@ -56,11 +57,11 @@ const Creature = function (_x = 0, _y = 0) {
         return modifier;
     }
 
-    creature.weapon = Weapon();
+    creature.weapon = Weapon("Dagger");
 
     creature.getWeaponDetails = function () {
         let damage = this.getStatMod("STR");
-        if (this.weapon.finesse && damage < this.getStatMod("DEX")) {
+        if (this.weapon.flags['finesse'] && damage < this.getStatMod("DEX")) {
             damage = this.getStatMod("DEX");
         }
         damage += this.weapon.enhancement;

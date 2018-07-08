@@ -58,12 +58,12 @@ function rollDice(roll) {
 
     if (keep !== num) {
         if (0 < keep && keep < num) {
-            // console.log("Advantage");
+            // Keep dice
             rolls.sort(function (a, b) {
                 return (a > b);
             });
         } else if (-num < keep && keep < 0) {
-            // console.log("Disadvantage");
+            // Drop dice
             rolls.sort(function (a, b) {
                 return (a < b);
             });

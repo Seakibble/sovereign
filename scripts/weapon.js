@@ -1,10 +1,14 @@
-const Weapon = function () {
-    return {
-        name: "a dagger",
-        type: "simple",
+/**
+ * Weapon
+ */
+const Weapon = function (weaponName = null) {
+    let weapon = {
+        name: "",
+        type: "",
+        value: 0,
         enhancement: 0,
-        damageDice: "1d4",
-        finesse: true,
+        damageDice: "",
+        flags: [],
         attack: function (details) {
             let attack = {};
             attack.naturalRoll = rollDice("1d20");
@@ -21,10 +25,60 @@ const Weapon = function () {
                 attack.damage = damageRoll + this.enhancement + details.damageBonus;
             }
 
-
-
-
             return attack;
         }
     }
+
+    let weaponData = [];
+    if (!isNull(weaponName)) {
+        weaponData = WEAPON_TABLE.find((entry) => entry[0] === weaponName);
+    } else {
+        let index = randomInt(0, WEAPON_TABLE.length - 1);
+        weaponData = WEAPON_TABLE[index];
+    }
+
+    weapon.name = weaponData[0];
+    weapon.value = weaponData[1];
+    weapon.type = weaponData[2];
+    weapon.damageDice = weaponData[3];
+    weapon.flags = weaponData[4];
+
+    return weapon;
 }
+
+
+const WEAPON_TABLE = [
+    // Simple Melee
+    //  NAME            VALUE   TYPE        DAMAGE DIE  FLAGS
+    ["Club",            1,      "simple",   "1d4",       [  'light'                                                                                            ]],
+    ["Dagger",          3,      "simple",   "1d4",       [  'light',   'finesse',  'thrown'                                                                    ]],
+    ["Greatclub",       2,      "simple",   "1d8",       [                                     'two-handed'                                                    ]],
+    ["Handaxe",         5,      "simple",   "1d6",       [  'light',               'thrown'                                                                    ]],
+    ["Javelin",         1,      "simple",   "1d4",       [                         'thrown'                                                                    ]],
+    ["Light Hammer",    2,      "simple",   "1d4",       [  'light',               'thrown'                                                                    ]],
+    ["Mace",            5,      "simple",   "1d6",       [                                                                                                     ]],
+    ["Quarterstaff",    2,      "simple",   "1d6",       [                                                     'versatile'                                     ]],
+    ["Sickle",          1,      "simple",   "1d4",       [  'light'                                                                                            ]],
+    ["Spear",           1,      "simple",   "1d6",       [                         'thrown',                   'versatile'                                     ]],
+
+    // Martial Melee
+    //  NAME            VALUE   TYPE        DAMAGE DIE  FLAGS
+    ["Battleaxe",       10,     "martial",   "1d8",      [                                                     'versatile'                                     ]],
+    ["Flail",           10,     "martial",   "1d8",      [                                                                                                     ]],
+    ["Glaive",          20,     "martial",   "1d10",     [                                     'two-handed',                   'reach',    'heavy'             ]],
+    ["Greataxe",        30,     "martial",   "1d12",     [                                     'two-handed',                               'heavy'             ]],
+    ["Greatsword",      50,     "martial",   "2d6",      [                                     'two-handed',                               'heavy'             ]],
+    ["Halberd",         20,     "martial",   "1d10",     [                                     'two-handed',                   'reach',    'heavy'             ]],
+    ["Lance",           10,     "martial",   "1d12",     [                                                                     'reach',            'special'   ]],
+    ["Longsword",       15,     "martial",   "1d8",      [                                                     'versatile'                                     ]],
+    ["Maul",            10,     "martial",   "2d6",      [                                     'two-handed',                   'reach'                         ]],
+    ["Morningstar",     15,     "martial",   "1d8",      [                                                                                                     ]],
+    ["Pike",            5,      "martial",   "1d10",     [                                     'two-handed',                   'reach',    'heavy'             ]],
+    ["Rapier",          25,     "martial",   "1d8",      [             'finesse'                                                                               ]],
+    ["Scimitar",        25,     "martial",   "1d6",      [  'light',   'finesse'                                                                               ]],
+    ["Shortsword",      10,     "martial",   "1d6",      [  'light',   'finesse'                                                                               ]],
+    ["Trident",         5,      "martial",   "1d4",      [                         'thrown',                   'versatile'                                     ]],
+    ["War Pick",        5,      "martial",   "1d8",      [                                                                                                     ]],
+    ["Warhammer",       15,     "martial",   "1d8",      [                                                     'versatile'                                     ]],
+    ["Whip",            2,      "martial",   "1d4",      [             'finesse',                                              'reach'                         ]],
+];

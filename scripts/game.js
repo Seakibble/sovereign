@@ -58,7 +58,6 @@ let Game = function () {
             this.getFrame();
         },
         update: function (key) {
-            // key = Keys.getKeysFromCode(key);
             if (key != "") {
                 if (this.logStack.length === 0) {
                     this.command(key);
@@ -68,7 +67,6 @@ let Game = function () {
             }
         },
         command: function (key) {
-            console.log(key);
             switch (key) {
                 case 'a': this.cmdMove(["left"]);
                     break;

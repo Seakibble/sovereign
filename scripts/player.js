@@ -8,6 +8,8 @@ const Player = function () {
     player.exp = 0;
     player.expToLevel = 10;
 
+    player.weapon = Weapon();
+
     player.stats = {
         strength: rollDice("4d6k3"),
         dexterity: rollDice("4d6k3"),
@@ -30,7 +32,15 @@ const Player = function () {
             this.level++;
             this.exp -= this.expToLevel;
             this.expToLevel = this.level * 10;
+
+            // Proficiency Bonus
             this.proficiency = Math.floor(this.level / 4) + 2;
+
+            // Hit Points
+            let extraHP = rollDice(player.hitDie) + player.getStatMod("CON");
+            this.mhp += extraHP;
+            this.chp += extraHP;
+
             game.log("Welcome to Level " + this.level + "!");
 
             if (this.exp >= this.expToLevel) {
