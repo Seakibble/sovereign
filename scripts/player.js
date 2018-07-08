@@ -4,6 +4,10 @@ const Player = function () {
     player.img = "@";
     player.colour = 'green';
     player.proficiency = 2;
+    player.proficiencies = [
+        "simple",
+        "martial",
+    ];
 
     player.exp = 0;
     player.expToLevel = 10;

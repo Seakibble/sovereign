@@ -61,8 +61,10 @@ const Creature = function (_x = 0, _y = 0) {
 
     creature.getWeaponDetails = function () {
         let damage = this.getStatMod("STR");
-        if (this.weapon.flags['finesse'] && damage < this.getStatMod("DEX")) {
+        if (this.weapon.flags.find((el) => el === 'finesse') && damage < this.getStatMod("DEX")) {
+            console.log(this.weapon.flags.find((el) => el === 'finesse'));
             damage = this.getStatMod("DEX");
+            
         }
         damage += this.weapon.enhancement;
         attack = damage;

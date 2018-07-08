@@ -1,9 +1,12 @@
 # Sovereign Changlog
 
+## v0.21 - Bugfix
+* Fixed bug where attack and damage bonuses weren't being applied correctly.
+
 ## v0.20 - Feature Release
-* Added weapon table
-* Randomized starting weapon for player
-* Changed default creature XP
+* Added weapon table.
+* Randomized starting weapon for player.
+* Changed default creature XP.
 
 ## v0.11 - Bugfix
 * Re-enabled damage.
