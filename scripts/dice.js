@@ -6,6 +6,9 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function isNumeric(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 /**
  * Returns the result of a given dice roll.
@@ -15,10 +18,14 @@ function rollDice(roll) {
     let num = 0;
     let die = 0;
 
+    if (isNumeric(roll)) {
+        return roll;
+    }
+
     if (roll.search("d") !== -1) {
         roll = roll.split("d");
         num = roll[0];
-        if (num === "undefined" || num === "") {
+        if (isNull(num) || num === "") {
             num = 1;
         }
         roll = roll[1];
@@ -36,22 +43,33 @@ function rollDice(roll) {
         keep = num;
     }
 
-    if (keep === "undefined" || keep === "") {
+    if (isNull(keep) || keep === "") {
         keep = num;
     }
 
     total = 0;
     let rolls = [];
 
+    // console.log(num + " d " + die + " k " + keep);
+
     for (let i = 0; i < num; i++) {
         rolls.push(randomInt(1, die));
     }
-    if (keep < num) {
-        rolls.sort(function (a, b) {
-            return (a > b);
-        });
 
-        rolls = rolls.slice(num - keep);
+    if (keep !== num) {
+        if (0 < keep && keep < num) {
+            // console.log("Advantage");
+            rolls.sort(function (a, b) {
+                return (a > b);
+            });
+        } else if (-num < keep && keep < 0) {
+            // console.log("Disadvantage");
+            rolls.sort(function (a, b) {
+                return (a < b);
+            });
+        }
+
+        rolls = rolls.slice(num - Math.abs(keep));
     }
 
     for (let i = 0; i < rolls.length; i++) {

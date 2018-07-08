@@ -11,29 +11,37 @@ let Game = function () {
         frameX: 59,
         frameY: 29,
         player: Player(),
-        turn: 0,
+        turn: 1,
+        logStack: [],
+        logHistory: [],
         init: function () {
-            this.player.x = randomInt(0, this.worldX - 1);
-            this.player.y = randomInt(0, this.worldY - 1);
+            this.player.location.x = randomInt(1, this.worldX - 2);
+            this.player.location.y = randomInt(1, this.worldY - 2);
 
             // initialize world
             for (let i = 0; i < this.worldX; i++) {
                 this.world.push([]);
                 for (let j = 0; j < this.worldY; j++) {
-                    let stack = [Thing()];
+                    let tile = Tile();
 
-                    if (i === this.player.x && j === this.player.y) {
-                        stack.push(this.player);
+                    if (i === this.player.location.x && j === this.player.location.y) {
+                        tile.creature = this.player;
                     } else {
-                        if (randomInt(0, 100) > 95 || (
+
+                        let terrainChance = rollDice("d1000");
+                        if (terrainChance > 950 || (
                             i === 0 || i === this.worldX - 1 ||
                             j === 0 || j === this.worldY - 1
                         )) {
-                            stack = [Wall()];
+                            tile.terrain = Wall();
+                        } else {
+                            let creatureChance = rollDice("d1000");
+                            if (creatureChance > 995) {
+                                tile.creature = Creature(i, j);
+                            }
                         }
                     }
-
-                    this.world[i].push(stack);
+                    this.world[i].push(tile);
                 }
             }
 
@@ -45,15 +53,19 @@ let Game = function () {
                 }
             }
 
+            this.log("Welcome to Sovereign! Enjoy your stay.");
+
             this.getFrame();
         },
         update: function (key) {
             // key = Keys.getKeysFromCode(key);
             if (key != "") {
-                this.command(key);
+                if (this.logStack.length === 0) {
+                    this.command(key);
+                    this.player.update();
+                }
+                this.getFrame();
             }
-
-            this.getFrame();
         },
         command: function (key) {
             console.log(key);
@@ -85,6 +97,7 @@ let Game = function () {
             }
         },
         cmdMove: function (direction) {
+            this.turn++;
             let x = 0;
             let y = 0;
             for (let i = 0; i < direction.length; i++) {
@@ -104,23 +117,29 @@ let Game = function () {
                 }
             }
 
-            let newLoc = this.world[this.player.x + x][this.player.y + y];
+            let newLoc = this.world[this.player.location.x + x][this.player.location.y + y];
 
-            if (newLoc !== 'null' && newLoc[0].isPassable === true && newLoc[newLoc.length - 1].isPassable === true) {
-                this.world[this.player.x][this.player.y].pop();
-                newLoc.push(this.player);
-                this.player.x += x;
-                this.player.y += y;
+            if (!isNull(newLoc) && newLoc.terrain.isPassable === true) {
+                if (isNull(newLoc.creature)) {
+                    this.world[this.player.location.x][this.player.location.y].creature = null;
+                    newLoc.creature = this.player;
+                    this.player.location.x += x;
+                    this.player.location.y += y;
+                } else {
+                    this.player.attack(newLoc.creature);
+                }
+            } else {
+                this.log("You cannot move there.");
             }
         },
         getFrame: function () {
-            let x = this.player.x - Math.floor(this.frameX / 2);
+            let x = this.player.location.x - Math.floor(this.frameX / 2);
             let quadX = Math.floor(this.frameX / 4);
             x = Math.floor(x / (quadX * 2)) * quadX * 2 + quadX;
             if (x < 0) x = 0;
             if (x > this.worldX - this.frameX) x = this.worldX - this.frameX;
 
-            let y = this.player.y - Math.floor(this.frameY / 2);
+            let y = this.player.location.y - Math.floor(this.frameY / 2);
             let quadY = Math.floor(this.frameY / 4);
             y = Math.floor(y / (quadY * 2)) * quadY * 2 + quadY;
             if (y < 0) y = 0;
@@ -128,10 +147,32 @@ let Game = function () {
 
             for (let i = 0; i < this.frameX; i++) {
                 for (let j = 0; j < this.frameY; j++) {
-                    this.frame[i][j] = this.world[i + x][j + y][this.world[i + x][j + y].length - 1];
+                    this.frame[i][j] = this.world[i + x][j + y].getVisible();
                 }
             }
-            this.turn++;
+        },
+        log: function (message) {
+            this.logStack.push(message);
+        },
+        getNextMessage: function () {
+            let message = "";
+            if (this.logStack.length > 0) {
+                message = this.logStack.shift();
+
+                let i = 0;
+                while (this.logHistory[i] === message) i++;
+
+                this.logHistory.unshift(message);
+
+                if (i > 0) {
+                    message += " (x" + (i + 1) + ")";
+                }
+
+                if (this.logHistory.length > 50) {
+                    this.logHistory.pop();
+                }
+            }
+            return message;
         }
     };
     game.init();

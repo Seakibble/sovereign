@@ -2,13 +2,15 @@
  * The UI and Input
  */
 
-let game = Game();
+let version = 0.10;
 
+let game = Game();
 
 // Resize the canvas to match its container size
 function resizeCanvas() {
     canvas.width = container.offsetWidth;
     canvas.height = container.offsetHeight;
+    window.requestAnimationFrame(draw);
 }
 
 var container = document.getElementById('container');
@@ -25,8 +27,6 @@ function init() {
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = 'rgb(50,50,50)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    window.requestAnimationFrame(draw);
 }
 
 function draw() {
@@ -41,41 +41,66 @@ function draw() {
     ctx.fillText("Sovereign", 20, 50);
 
     // Author
-    ctx.font = "18px Lucida Console";
+    ctx.font = "16px Lucida Console";
     ctx.fillStyle = colours['grey'];
-    ctx.fillText("By Max Leeming", 30, 75);
+    ctx.fillText("By Max Leeming | v" + version, 30, 75);
 
     // Stats
     ctx.fillStyle = colours['lightGrey'];
 
     let textList = [];
-    textList.push("Name:   " + game.player.name);
-    textList.push("Race:   " + game.player.race);
-    textList.push("Class:  " + game.player.class);
+    textList.push("Name:          " + game.player.name);
+    textList.push("Race:          " + game.player.race);
+    textList.push("Class:         " + game.player.class + " (" + game.player.level + ")");
     textList.push("");
-    textList.push("Max HP: " + game.player.mhp);
-    textList.push("Cur HP: " + game.player.chp);
+    textList.push("Experience:    " + game.player.exp + " / " + game.player.expToLevel);
     textList.push("");
-    textList.push("STR:    " + game.player.printStat("STR"));
-    textList.push("DEX:    " + game.player.printStat("DEX"));
-    textList.push("CON:    " + game.player.printStat("CON"));
-    textList.push("INT:    " + game.player.printStat("INT"));
-    textList.push("WIS:    " + game.player.printStat("WIS"));
-    textList.push("CHA:    " + game.player.printStat("CHA"));
+    textList.push("Hit Points:    " + game.player.chp + "/" + game.player.mhp);
+    textList.push("Armour Class:  " + game.player.ac);
     textList.push("");
-    textList.push("Location: " + game.player.x + ", " + game.player.y);
-    textList.push("Turn: " + game.turn);
+    textList.push("Proficiency:   +" + game.player.proficiency);
+    textList.push("");
+    textList.push("Strength:      " + game.player.printStat("STR"));
+    textList.push("Dexterity:     " + game.player.printStat("DEX"));
+    textList.push("Constitution:  " + game.player.printStat("CON"));
+    textList.push("Intelligence:  " + game.player.printStat("INT"));
+    textList.push("Wisdom:        " + game.player.printStat("WIS"));
+    textList.push("Charisma:      " + game.player.printStat("CHA"));
+    textList.push("");
+
+    let weaponDetails = game.player.getWeaponDetails();
+
+    let attackPositive = weaponDetails.attackBonus > 0 ? "+" : "";
+    weaponDetails.attackBonus = weaponDetails.attackBonus === 0 ? "" : weaponDetails.attackBonus + ", ";
+
+    let damagePositive = weaponDetails.damageBonus > 0 ? "+" : "";
+    weaponDetails.damageBonus = weaponDetails.damageBonus === 0 ? "" : weaponDetails.damageBonus;
+
+    let weaponMessage = attackPositive + weaponDetails.attackBonus + game.player.weapon.damageDice + damagePositive + weaponDetails.damageBonus;
+    textList.push("Weapon:        " + game.player.weapon.name);
+    textList.push("               (" + weaponMessage + ")");
+    textList.push("");
+    textList.push("");
+    textList.push("Location:      " + game.player.location.x + ", " + game.player.location.y);
+    textList.push("Turn:          " + game.turn);
 
     for (let i = 0; i < textList.length; i++) {
-        ctx.fillText(textList[i], 20, 25 * i + 125);
+        ctx.fillText(textList[i], 20, 20 * i + 125);
     }
 
+    // Message Log
+    let message = ">> " + game.getNextMessage();
+    if (game.logStack.length > 0) {
+        message += "  --MORE--"
+    }
+    ctx.fillText(message, 400, 75);
+
     // The frame
-    ctx.font = "25px Lucida Console";
+    ctx.font = "22px Lucida Console";
     for (let i = 0; i < game.frameX; i++) {
         for (let j = 0; j < game.frameY; j++) {
             ctx.fillStyle = colours[game.frame[i][j].colour];
-            ctx.fillText(game.frame[i][j].img, 18 * i + 400, 25 * j + 50);
+            ctx.fillText(game.frame[i][j].img, 18 * i + 400, 25 * j + 125);
         }
     }
 }
