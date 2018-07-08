@@ -89,7 +89,7 @@ const Creature = function (_x = 0, _y = 0) {
                 message += "The " + this.type + " hits the " + target.type;
                 if (attack.damage > 0) {
                     message += ", dealing " + attack.damage + " damage.";
-                    // target.takesDamage(attack.damage);
+                    target.takesDamage(attack.damage);
                 } else {
                     message += " but deal no damage!";
                 }

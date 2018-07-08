@@ -2,7 +2,7 @@
  * The UI and Input
  */
 
-let version = 0.10;
+let version = 0.11;
 
 let game = Game();
 
