@@ -1,13 +1,10 @@
 const Player = function () {
     let player = Creature();
     player.type = "player";
-    player.img = "@";
-    player.colour = 'green';
+    player.glyph = "@";
+    player.colour = 'white';
     player.proficiency = 2;
-    player.proficiencies = [
-        "simple",
-        "martial",
-    ];
+
 
     player.exp = 0;
     player.expToLevel = 10;
@@ -23,6 +20,20 @@ const Player = function () {
         charisma: rollDice("4d6k3"),
     }
 
+    // Provide name...
+    player.name = "Kaethrion";
+
+    // Select Race...
+    player.race = "Half-elf";
+
+    // Select Class...
+    player.class = "Paladin";
+    player.level = 1;    
+    player.proficiencies = [
+        "simple",
+        "martial",
+    ];
+
     player.mhp = 10 + player.getStatMod("CON");
     player.chp = player.mhp;
 
@@ -31,22 +42,34 @@ const Player = function () {
     // Player specific properties
 
     player.update = function () {
-        // Leveling
+        // Check to see if the player is ready to level up.
         if (this.exp >= this.expToLevel) {
             this.level++;
             this.exp -= this.expToLevel;
             this.expToLevel = this.level * 10;
-
-            // Proficiency Bonus
-            this.proficiency = Math.floor(this.level / 4) + 2;
-
-            // Hit Points
-            let extraHP = rollDice(player.hitDie) + player.getStatMod("CON");
-            this.mhp += extraHP;
-            this.chp += extraHP;
-
+            
             game.log("Welcome to Level " + this.level + "!");
 
+            let message = "";
+            // Hit Points
+            let extraHP = rollDice(player.hitDie) + player.getStatMod("CON");
+            if (extraHP > 0) {
+                this.mhp += extraHP;
+                this.chp += extraHP;
+                message += "You've gained " + extraHP + " Hit Points. ";
+            }
+
+            // Proficiency Bonus
+            let newProficiency = Math.floor(this.level / 4) + 2;
+
+            if (newProficiency > this.proficiency) {
+                this.proficiency = newProficiency;
+                message += "Your Proficiency Bonus has increased.";
+            }
+
+            game.log(message);
+
+            // Check to see if the player still has enough XP to level up again
             if (this.exp >= this.expToLevel) {
                 this.update();
             }
@@ -87,11 +110,6 @@ const Player = function () {
         }
         return score + "  " + modifier
     };
-
-    player.name = "Kaethrion";
-    player.race = "Half-elf";
-    player.class = "Paladin";
-    player.level = 1;
 
     return player;
 }

@@ -4,56 +4,25 @@
 
 let Game = function () {
     let game = {
-        world: [],
-        worldX: 100,
-        worldY: 100,
+        world: null,
         frame: [],
         frameX: 59,
         frameY: 29,
-        player: Player(),
+        player: null,
         turn: 1,
         logStack: [],
         logHistory: [],
         init: function () {
-            this.player.location.x = randomInt(1, this.worldX - 2);
-            this.player.location.y = randomInt(1, this.worldY - 2);
+            this.world = WorldGen.makeCaves(100, 100);
+            this.player = Player(this.world);
+            this.world.addAtEmptyLocation(this.player);
 
-            // initialize world
-            for (let i = 0; i < this.worldX; i++) {
-                this.world.push([]);
-                for (let j = 0; j < this.worldY; j++) {
-                    let tile = Tile();
-
-                    if (i === this.player.location.x && j === this.player.location.y) {
-                        tile.creature = this.player;
-                    } else {
-
-                        let terrainChance = rollDice("d1000");
-                        if (terrainChance > 950 || (
-                            i === 0 || i === this.worldX - 1 ||
-                            j === 0 || j === this.worldY - 1
-                        )) {
-                            tile.terrain = Wall();
-                        } else {
-                            let creatureChance = rollDice("d1000");
-                            if (creatureChance > 995) {
-                                tile.creature = Creature(i, j);
-                            }
-                        }
-                    }
-                    this.world[i].push(tile);
-                }
-            }
-
-            // initialize frame
+            // initialize frames
             for (let i = 0; i < this.frameX; i++) {
                 this.frame.push([]);
-                for (let j = 0; j < this.frameY; j++) {
-                    this.frame[i].push(null);
-                }
             }
 
-            this.log("Welcome to Sovereign! Enjoy your stay.");
+            this.log("Welcome to Sovereign!");
 
             this.getFrame();
         },
@@ -62,6 +31,7 @@ let Game = function () {
                 if (this.logStack.length === 0) {
                     this.command(key);
                     this.player.update();
+                    this.world.update();
                 }
                 this.getFrame();
             }
@@ -115,39 +85,44 @@ let Game = function () {
                 }
             }
 
-            let newLoc = this.world[this.player.location.x + x][this.player.location.y + y];
+            let newX = this.player.x + x;
+            let newY = this.player.y + y;
 
-            if (!isNull(newLoc) && newLoc.terrain.isPassable === true) {
-                if (isNull(newLoc.creature)) {
-                    this.world[this.player.location.x][this.player.location.y].creature = null;
-                    newLoc.creature = this.player;
-                    this.player.location.x += x;
-                    this.player.location.y += y;
+            if (this.world.getTile(newX, newY).isPassable()) {
+                let creature = this.world.getCreature(newX, newY);
+                if (isNull(creature)) {
+                    this.player.x += x;
+                    this.player.y += y;
                 } else {
-                    this.player.attack(newLoc.creature);
+                    this.player.attack(creature);
                 }
             } else {
                 this.log("You cannot move there.");
             }
         },
         getFrame: function () {
-            let x = this.player.location.x - Math.floor(this.frameX / 2);
+            // Scrolling
+            let x = this.player.x - Math.floor(this.frameX / 2);
             let quadX = Math.floor(this.frameX / 4);
             x = Math.floor(x / (quadX * 2)) * quadX * 2 + quadX;
             if (x < 0) x = 0;
-            if (x > this.worldX - this.frameX) x = this.worldX - this.frameX;
+            if (x > this.world.width - this.frameX) x = this.world.width - this.frameX;
 
-            let y = this.player.location.y - Math.floor(this.frameY / 2);
+            let y = this.player.y - Math.floor(this.frameY / 2);
             let quadY = Math.floor(this.frameY / 4);
             y = Math.floor(y / (quadY * 2)) * quadY * 2 + quadY;
             if (y < 0) y = 0;
-            if (y > this.worldY - this.frameY) y = this.worldY - this.frameY;
+            if (y > this.world.height - this.frameY) y = this.world.height - this.frameY;
 
+            // Terrain and Creatures
             for (let i = 0; i < this.frameX; i++) {
                 for (let j = 0; j < this.frameY; j++) {
-                    this.frame[i][j] = this.world[i + x][j + y].getVisible();
+                    this.frame[i][j] = this.world.getCreature(i + x, j + y) || this.world.getTile(i + x, j + y);
                 }
             }
+            
+            // Player
+            this.frame[this.player.x - x][this.player.y - y] = this.player;
         },
         log: function (message) {
             this.logStack.push(message);
