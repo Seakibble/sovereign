@@ -22,9 +22,10 @@ const World = function (_x, _y) {
         height: _y,
         tiles: [],
         creatures: [],
-        update: function () {
+        items: [],
+        update: function (key) {
             for (let i = 0; i < this.creatures.length; i++) {
-                this.creatures[i].update();
+                this.creatures[i].update(key);
             }
         },
         getTile: function (_x, _y) {
@@ -34,6 +35,22 @@ const World = function (_x, _y) {
                 return this.tiles[_x][_y];
             }
         },
+        getPlayer: function (_x, _y) {
+            for (let i = 0; i < this.creatures.length; i++) {
+                if (this.creatures[i].type === "player") {
+                    return this.creatures[i];
+                }
+            }
+            return null;
+        },
+        getItem: function (_x, _y) {
+            for (let i = 0; i < this.items.length; i++) {
+                if (this.items[i].x == _x && this.items[i].y == _y) {
+                    return this.items[i];
+                }
+            }
+            return null;
+        },
         getCreature: function (_x, _y) {
             for (let i = 0; i < this.creatures.length; i++) {
                 if (this.creatures[i].x == _x && this.creatures[i].y == _y) {
@@ -42,10 +59,16 @@ const World = function (_x, _y) {
             }
             return null;
         },
-        removeCreature: function (creature) {
-            for (let i = 0; i < this.creatures.length; i++) {
-                if (this.creatures[i].x === creature.x && this.creatures[i].y === creature.y) {
-                    this.creatures.splice(i, 1);
+        remove: function (object) {
+            let list = null;
+            if (object.type === "creature") {
+                list = this.creatures;
+            } else {
+                list = this.items;
+            }
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].x === object.x && list[i].y === object.y) {
+                    list.splice(i, 1);
                     return;
                 }
             }
@@ -56,12 +79,14 @@ const World = function (_x, _y) {
             do {
                 x = randomInt(0, this.width - 1);
                 y = randomInt(0, this.height -1);
-            } while (!this.getTile(x,y).isPassable() || !isNull(this.getCreature(x,y)));  
+            } while (!this.getTile(x,y).isPassable() || !isNull(this.getItem(x,y)) || !isNull(this.getCreature(x,y)));  
 
             _object.x = x;
             _object.y = y;
-            if (_object.type === "creature") {
+            if (_object.type === "creature" || _object.type === "player") {
                 this.creatures.push(_object);
+            } else if (_object.type === "item") {
+                this.items.push(_object);
             }
         }
     };
@@ -143,11 +168,26 @@ const WorldGen = {
     makeCaves: function (_x, _y) {
         this.randomTiles(_x, _y).smooth(8, 1);
         this.addMonsters(100);
+        this.addLoot(50);
+        this.addPlayer();
+
         return this.world;
     },
     addMonsters: function (num) {
         for (let i = 0; i < num; i++) {
-            this.world.addAtEmptyLocation(Creature(this.world));
+            this.world.addAtEmptyLocation(Kobold(this.world));
         }
-    }
+    },
+    addLoot: function (num) {
+        for (let i = 0; i < num; i++) {
+            if (randomInt(0,1) === 1) {
+                this.world.addAtEmptyLocation(Weapon());
+            } else {
+                this.world.addAtEmptyLocation(Cash());
+            }            
+        }
+    },
+    addPlayer: function () {
+        this.world.addAtEmptyLocation(Player(this.world));
+    },
 }

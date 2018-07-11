@@ -1,5 +1,13 @@
 # Sovereign Changlog
 
+## Pre-alpha v0.40 - Feature Release
+* Massive refactoring
+* Removed canvas.js - it was split into screen.js (handles just the display) and sovereign.js (creates the game and handles window stuff).
+* Added gold (money!) and the first steps of an inventory system.
+* Enemy AI! The kobolds will move around a bit and attack you. It's entirely random at the moment, so the next step will be to make their behaviour dependent on the player.
+* Gold and Weapons get seeded into the world now on world generation, giving the player something to pick up.
+* Reorganized the filesystem, moving things into folders, since the game's starting to get a bit big!
+
 ## Pre-alpha v0.30 - Feature Release
 Took some pointers from a really comprehensive online roguelike tutorial: http://trystans.blogspot.com/2016/01/roguelike-tutorial-00-table-of-contents.html
 * Refactored virtually everything involving the gameworld, paving the way for future refactoring and further encapsulation.

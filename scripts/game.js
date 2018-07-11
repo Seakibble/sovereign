@@ -10,12 +10,12 @@ let Game = function () {
         frameY: 29,
         player: null,
         turn: 1,
+        gameScreen: Screen(),
         logStack: [],
         logHistory: [],
         init: function () {
             this.world = WorldGen.makeCaves(100, 100);
-            this.player = Player(this.world);
-            this.world.addAtEmptyLocation(this.player);
+            this.player = this.world.getPlayer();
 
             // initialize frames
             for (let i = 0; i < this.frameX; i++) {
@@ -29,75 +29,10 @@ let Game = function () {
         update: function (key) {
             if (key != "") {
                 if (this.logStack.length === 0) {
-                    this.command(key);
-                    this.player.update();
-                    this.world.update();
+                    this.world.update(key);
                 }
                 this.getFrame();
-            }
-        },
-        command: function (key) {
-            switch (key) {
-                case 'a': this.cmdMove(["left"]);
-                    break;
-                case 'd': this.cmdMove(["up"]);
-                    break;
-                case 's': this.cmdMove(["down"]);
-                    break;
-                case 'h': this.cmdMove(["right"]);
-                    break;
-                case '1': this.cmdMove(["left", "down"]);
-                    break;
-                case '2': this.cmdMove(["down"]);
-                    break;
-                case '3': this.cmdMove(["right", "down"]);
-                    break;
-                case '4': this.cmdMove(["left"]);
-                    break;
-                case '6': this.cmdMove(["right"]);
-                    break;
-                case '7': this.cmdMove(["up", "left"]);
-                    break;
-                case '8': this.cmdMove(["up"]);
-                    break;
-                case '9': this.cmdMove(["up", "right"]);
-                    break;
-            }
-        },
-        cmdMove: function (direction) {
-            this.turn++;
-            let x = 0;
-            let y = 0;
-            for (let i = 0; i < direction.length; i++) {
-                switch (direction[i]) {
-                    case "left":
-                        x--;
-                        break;
-                    case "up":
-                        y--;
-                        break;
-                    case "right":
-                        x++;
-                        break;
-                    case "down":
-                        y++;
-                        break;
-                }
-            }
-
-            let newX = this.player.x + x;
-            let newY = this.player.y + y;
-
-            if (this.world.getTile(newX, newY).isPassable()) {
-                let creature = this.world.getCreature(newX, newY);
-                if (isNull(creature)) {
-                    this.player.x += x;
-                    this.player.y += y;
-                } else {
-                    this.player.attack(creature);
-                }
-            } else {
-                this.log("You cannot move there.");
+                this.gameScreen.draw();
             }
         },
         getFrame: function () {
@@ -114,10 +49,10 @@ let Game = function () {
             if (y < 0) y = 0;
             if (y > this.world.height - this.frameY) y = this.world.height - this.frameY;
 
-            // Terrain and Creatures
+            // Terrain, Creatures, Items
             for (let i = 0; i < this.frameX; i++) {
                 for (let j = 0; j < this.frameY; j++) {
-                    this.frame[i][j] = this.world.getCreature(i + x, j + y) || this.world.getTile(i + x, j + y);
+                    this.frame[i][j] = this.world.getCreature(i + x, j + y) || this.world.getItem(i + x, j + y) || this.world.getTile(i + x, j + y);
                 }
             }
             
@@ -146,6 +81,9 @@ let Game = function () {
                 }
             }
             return message;
+        },
+        gameOver: function () {
+            this.init();
         }
     };
     game.init();

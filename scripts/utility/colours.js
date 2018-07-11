@@ -7,4 +7,7 @@ const colours = {
     green: 'rgb(60,220,60)',
     paleRed: 'rgb(250,130,150)',
     red: 'rgb(220,60,60)',
+    errorRed: 'rgb(255,0,0)',
+    yellow: 'rgb(255,255,70)',
+    gold: 'rgb(255,215,0)',
 };

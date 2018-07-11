@@ -1,10 +1,11 @@
-const Player = function () {
-    let player = Creature();
+const Player = function (_world) {
+    let player = Creature(null);
     player.type = "player";
     player.glyph = "@";
     player.colour = 'white';
     player.proficiency = 2;
 
+    player.ai = PlayerAI(_world, player);
 
     player.exp = 0;
     player.expToLevel = 10;
@@ -41,7 +42,9 @@ const Player = function () {
 
     // Player specific properties
 
-    player.update = function () {
+    player.update = function (key) {
+        this.ai.update(key);
+
         // Check to see if the player is ready to level up.
         if (this.exp >= this.expToLevel) {
             this.level++;
