@@ -1,5 +1,13 @@
 # Sovereign Changlog
 
+## Pre-alpha v0.50 - Feature Release
+* Further refactoring.
+* Removed game.js - most of the functionality was moved to gameScreen.js.
+* Created screen subclasses, modularizing I/O and display.
+* Added a Start screen and a Game Over Screen.
+* The frame no longer has 'breakpoints' where it jumps on a specific line. Now it simply recenters on the player.
+* Minor style fix for resizing the window.
+
 ## Pre-alpha v0.40 - Feature Release
 * Massive refactoring
 * Removed canvas.js - it was split into screen.js (handles just the display) and sovereign.js (creates the game and handles window stuff).

@@ -20,6 +20,9 @@ const World = function (_x, _y) {
     let world = {
         width: _x,
         height: _y,
+        player: null,
+        screenWidth: 60,
+        screenHeight: 30,
         tiles: [],
         creatures: [],
         items: [],
@@ -34,14 +37,6 @@ const World = function (_x, _y) {
             } else {
                 return this.tiles[_x][_y];
             }
-        },
-        getPlayer: function (_x, _y) {
-            for (let i = 0; i < this.creatures.length; i++) {
-                if (this.creatures[i].type === "player") {
-                    return this.creatures[i];
-                }
-            }
-            return null;
         },
         getItem: function (_x, _y) {
             for (let i = 0; i < this.items.length; i++) {
@@ -83,7 +78,10 @@ const World = function (_x, _y) {
 
             _object.x = x;
             _object.y = y;
-            if (_object.type === "creature" || _object.type === "player") {
+            if (_object.type === "creature") {
+                this.creatures.push(_object);
+            } else if (_object.type === "player") {
+                this.player = _object;
                 this.creatures.push(_object);
             } else if (_object.type === "item") {
                 this.items.push(_object);

@@ -79,7 +79,6 @@ const CreatureAI = function (_world, _creature) {
                     this.creature.exp += target.exp;
                 } else if (target.type === "player") {
                     game.log("You have been slain by the " + this.creature.name + "!");
-                    game.gameOver();
                 } else {
                     message = "The " + this.creature.name + " has slain the " + target.name + ".";
                 }

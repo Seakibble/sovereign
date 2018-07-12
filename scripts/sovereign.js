@@ -1,15 +1,13 @@
-let version = "Pre-alpha v0.40";
+let version = "Pre-alpha v0.50";
 
-let game = Game();
+let game = StartScreen();
 
 // Input
 document.onkeypress = function (e) {
     e = e || window.event;
     let key = String.fromCharCode(e.keyCode);
-    if (key === 'undefined') {
-        key = "";
-    }
-    game.update(key);
+
+    game = game.input(key);
 };
 
 
@@ -17,7 +15,7 @@ document.onkeypress = function (e) {
 // Needs to be done in this roundabout way because feeding the screen.resizeCanvas
 // function straight into the listener causes the 'this' context to get messed up :(
 function resizeCanvas() {
-    game.gameScreen.resizeCanvas();
+    game.resizeCanvas();
 }
 
 window.addEventListener('resize', resizeCanvas);
