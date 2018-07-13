@@ -6,6 +6,7 @@ const TILE = {
     Tile: function (_type) {
         return {
             name: _type.name,
+            type: "tile",
             glyph: _type.glyph,
             colour: _type.colour,
             isPassable: function () {
@@ -27,8 +28,14 @@ const World = function (_x, _y) {
         creatures: [],
         items: [],
         update: function (key) {
+            // Update player first
+            this.player.update(key);
+
+            // Update monsters afterwards
             for (let i = 0; i < this.creatures.length; i++) {
-                this.creatures[i].update(key);
+                if (this.creatures[i].type !== "player") {
+                    this.creatures[i].update();
+                }
             }
         },
         getTile: function (_x, _y) {
@@ -110,8 +117,10 @@ const WorldGen = {
         
         return this;
     },
-    smooth: function (iterations, resolution = 1) {
-        let tiles2 = [];   
+    smooth: function (iterationsMin = 2, iterationsVariance = 6, resolutionMin = 1, resolutionVariance = 2) {
+        let iterations = randomInt(iterationsMin, iterationsVariance);
+
+        let tiles2 = [];
         for (let time = 0; time < iterations; time++) {
             // Initialize a duplicate for reference 
             for (let i = 0; i < this.world.width; i++) {
@@ -126,6 +135,8 @@ const WorldGen = {
                 for (let y = 0; y < this.world.height; y++) {
                     let floors = 0;
                     let rocks = 0;
+
+                    let resolution = randomInt(resolutionMin, resolutionVariance)
 
                     for (let ox = -resolution; ox <= resolution; ox++) {
                         for (let oy = -resolution; oy <= resolution; oy++) {
@@ -158,16 +169,16 @@ const WorldGen = {
             this.world.tiles[x][0] = TILE.Tile(TILE.WALL);
             for (let y = 0; y < this.world.height; y++) {
                 this.world.tiles[0][y] = TILE.Tile(TILE.WALL);     
-                this.world.tiles[this.world.height-1][y] = TILE.Tile(TILE.WALL);           
+                this.world.tiles[this.world.width-1][y] = TILE.Tile(TILE.WALL);           
             }
-            this.world.tiles[x][this.world.width-1] = TILE.Tile(TILE.WALL);
+            this.world.tiles[x][this.world.height-1] = TILE.Tile(TILE.WALL);
         }
     },
-    makeCaves: function (_x, _y) {
-        this.randomTiles(_x, _y).smooth(8, 1);
-        this.addMonsters(100);
-        this.addLoot(50);
+    makeCaves: function (_size, _monsters, _loot) {
+        this.randomTiles(_size, _size).smooth();
         this.addPlayer();
+        this.addMonsters(_monsters);
+        this.addLoot(_loot);        
 
         return this.world;
     },

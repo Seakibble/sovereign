@@ -23,7 +23,6 @@ const LoseScreen = function () {
     };
 
     screen.input = function (_key) {
-        
         if (_key) {
             return StartScreen();
         }

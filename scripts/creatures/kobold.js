@@ -9,6 +9,22 @@ const Kobold = function (_world) {
     kobold.name = "Kobold"
 
     /**
+     * Creature stats
+     */
+
+    kobold.stats = {
+        strength:       7,
+        dexterity:      15,
+        constitution:   9,
+        intelligence:   8,
+        wisdom:         7,
+        charisma:       8,
+    },
+
+    kobold.calculateMHP();
+    kobold.restoreCHP();
+
+    /**
      * Creature equipment
      */
     kobold.weapon = Weapon("Dagger");
@@ -19,9 +35,8 @@ const Kobold = function (_world) {
     /**
      * Creature Behaviour
      */
-    kobold.ai.update = function () {
-        this.wander();
-    }
+    kobold.actionsPerTurn = 0.8;
+    kobold.ai = AI_TEMPLATES.aggressive(_world, kobold);
 
     return kobold;
 }

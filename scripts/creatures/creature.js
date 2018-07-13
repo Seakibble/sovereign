@@ -9,6 +9,8 @@ const Creature = function (_world) {
         ai: null,
         dead: false,
         exp: 1,
+        actionsPerTurn: 1,
+        currentSpeed: Math.random(), // this is to offset creatures actions, so they don't move in lockstep with each other
         inventory: [],
         gold: 0,
         stats: {
@@ -74,16 +76,32 @@ const Creature = function (_world) {
             };
         },
         update: function () {
-            this.ai.update();
+            this.currentSpeed++;
+            
+            let speed = (1 / this.actionsPerTurn);
+
+            while(this.currentSpeed >= speed) {
+                this.ai.update();
+                this.currentSpeed -= speed;
+            }
         },    
         takesDamage: function (damage) {
             this.chp -= damage;
+            if (this.chp < 0) {
+                this.chp = 0;
+            }
             if (this.chp <= 0) {
                 game.world.remove(this);
             }
+        },
+        calculateMHP: function () {
+            this.mhp = Math.max(1, rollDice(this.hitDie) + this.getStatMod("CON"));
+        },
+        restoreCHP: function () {
+            this.chp = this.mhp;
         }
     };
-
+    
     creature.ai = CreatureAI(_world, creature);
     return creature;
 }

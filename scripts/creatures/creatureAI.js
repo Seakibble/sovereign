@@ -2,6 +2,8 @@ const CreatureAI = function (_world, _creature) {
     let ai = {
         creature: _creature,
         world: _world,
+        searchRadius: 10,
+        target: _world.player,
         move: function (_x, _y) {
             if (this.world.getTile(_x, _y).isPassable()) {
                 let other = this.world.getCreature(_x, _y);
@@ -18,12 +20,44 @@ const CreatureAI = function (_world, _creature) {
                 }
             } else if (this.creature.type === "player") {
                 game.log("You cannot move there.");
+                return false;
             }
+            return true;
         },
         wander: function () {
             let x = randomInt(-1, 1);
             let y = randomInt(-1, 1);
             this.creature.move(x, y);
+        },
+        hunt: function () {
+            if (!isNull(this.target)) {
+                if (this.target.x < this.creature.x + this.searchRadius &&
+                    this.target.x > this.creature.x - this.searchRadius &&
+                    this.target.y < this.creature.y + this.searchRadius &&
+                    this.target.y > this.creature.y - this.searchRadius) {
+                        let x = 0;
+                        let y = 0;
+
+                        if (this.target.x < this.creature.x) {
+                            x -= 1;
+                        }
+                        if (this.target.x > this.creature.x) {
+                            x += 1;
+                        }
+                        if (this.target.y < this.creature.y) {
+                            y -= 1;
+                        }
+                        if (this.target.y > this.creature.y) {
+                            y += 1;
+                        }
+
+                        if (!this.creature.move(x, y)) {
+                            
+                        }
+                        return;
+                    }
+            }
+            this.wander();
         },
         pickUp: function (_item) {
             if (_item.name === "Gold") {
@@ -88,4 +122,21 @@ const CreatureAI = function (_world, _creature) {
     };
 
     return ai;
+};
+
+const AI_TEMPLATES = {
+    aggressive: function (_world, _creature) {
+        let ai = CreatureAI(_world, _creature);
+        ai.update = function () {
+            if (!isNull(this.target)) {
+                this.hunt(this.target);
+            } else {
+                if (randomInt(0,100) > 50) {
+                    this.wander();
+                }
+            }
+        }
+
+        return ai;
+    }
 };

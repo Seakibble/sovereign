@@ -9,7 +9,6 @@ const GameScreen = function () {
     screen.player = null;
     screen.targetX = null;
     screen.targetY = null;
-    screen.turn = 1,
     screen.logStack = [];
     screen.logHistory = [];
     
@@ -38,13 +37,15 @@ const GameScreen = function () {
     }
 
     screen.input = function (_key) {
-        if (_key === "Q") {
+        if ((_key === "Q" && this.logHistory[0].includes("Really quit? (Press Q again to confirm)")) 
+        || this.logHistory[0].includes("You have been slain")) {
             return LoseScreen();
         }
 
-        this.updateWorld(_key);
-
-        return this;
+        if (_key === "Q") {
+            this.log("Really quit? (Press Q again to confirm)");
+        }
+        return this.updateWorld(_key);
     };
 
     screen.updateWorld = function (_key) {
@@ -57,6 +58,8 @@ const GameScreen = function () {
         }
 
         this.draw();
+
+        return this;
     }
 
     screen.getScrollX = function () {
@@ -99,7 +102,7 @@ const GameScreen = function () {
         textList.push("");
         textList.push("Experience:      " + this.player.exp + " / " + this.player.expToLevel);
         textList.push("");
-        textList.push("Hit Points:      " + this.player.chp + "/" + this.player.mhp);
+        textList.push("Hit Points:      " + this.player.chp + " / " + this.player.mhp);
         textList.push("Armour Class:    " + this.player.ac);
         textList.push("");
         textList.push("Proficiency:     +" + this.player.proficiency);
@@ -129,7 +132,7 @@ const GameScreen = function () {
         textList.push("");
         textList.push("");
         textList.push("Location:        " + this.player.x + ", " + this.player.y);
-        textList.push("Turn:            " + this.turn);
+        textList.push("Turn:            " + this.player.turn);
 
         for (let i = 0; i < textList.length; i++) {
             this.ctx.fillText(textList[i], 20, 20 * i + 125);
@@ -169,7 +172,7 @@ const GameScreen = function () {
     };
 
     // Initialization
-    screen.world = WorldGen.makeCaves(100, 100);
+    screen.world = WorldGen.makeCaves(200, 160, 30);
     screen.player = screen.world.player;
 
     // initialize frame

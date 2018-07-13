@@ -1,4 +1,4 @@
-let version = "Pre-alpha v0.50";
+let version = "Pre-alpha v0.60";
 
 let game = StartScreen();
 

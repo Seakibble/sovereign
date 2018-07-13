@@ -1,9 +1,10 @@
 const Player = function (_world) {
-    let player = Creature(null);
+    let player = Creature(_world);
     player.type = "player";
     player.glyph = "@";
     player.colour = 'white';
     player.proficiency = 2;
+    player.turn = 1,
 
     player.ai = PlayerAI(_world, player);
 
