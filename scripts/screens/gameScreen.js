@@ -145,6 +145,7 @@ const GameScreen = function () {
         }
         this.ctx.fillText(message, 400, 75);
 
+        this.player.ai.fov.update();
     
         let left = this.getScrollX();
         let top = this.getScrollY();
@@ -152,7 +153,15 @@ const GameScreen = function () {
         // Generate the frame containing terrain, creatures, and items
         for (let i = 0; i < this.world.screenWidth; i++) {
             for (let j = 0; j < this.world.screenHeight; j++) {
-                this.frame[i][j] = this.world.getCreature(i + left, j + top) || this.world.getItem(i + left, j + top) || this.world.getTile(i + left, j + top);
+                let hereX = left + i;
+                let hereY = top + j;
+
+                if (this.player.canSee(hereX, hereY)) {    
+                    this.frame[i][j] = getRenderable(this.world.getCreature(hereX, hereY) || this.world.getItem(hereX, hereY) || this.world.getTile(hereX, hereY));
+                } else {
+                    this.frame[i][j] = getRenderable(this.player.ai.fov.getTile(hereX, hereY));
+                    this.frame[i][j].colour = "dullGrey";
+                }
             }
         }
             
@@ -173,6 +182,7 @@ const GameScreen = function () {
 
     // Initialization
     screen.world = WorldGen.makeCaves(200, 160, 30);
+    // screen.world = WorldGen.makeTestRoom(60, 30);
     screen.player = screen.world.player;
 
     // initialize frame

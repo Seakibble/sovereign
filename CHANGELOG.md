@@ -1,5 +1,8 @@
 # Sovereign Changlog
 
+## Pre-alpha v0.70 - Feature Release
+* Line of sight added
+
 ## Pre-alpha v0.60 - Feature Release
 * Advanced AI - added template behaviours that determine how a given creature behaves.
 * Kobolds will now actively hunt the player if they get too close to them, and otherwise maybe moving about.

@@ -2,7 +2,6 @@ const CreatureAI = function (_world, _creature) {
     let ai = {
         creature: _creature,
         world: _world,
-        searchRadius: 10,
         target: _world.player,
         move: function (_x, _y) {
             if (this.world.getTile(_x, _y).isPassable()) {
@@ -31,10 +30,7 @@ const CreatureAI = function (_world, _creature) {
         },
         hunt: function () {
             if (!isNull(this.target)) {
-                if (this.target.x < this.creature.x + this.searchRadius &&
-                    this.target.x > this.creature.x - this.searchRadius &&
-                    this.target.y < this.creature.y + this.searchRadius &&
-                    this.target.y > this.creature.y - this.searchRadius) {
+                if (this.canSee(this.target.x, this.target.y)) {
                         let x = 0;
                         let y = 0;
 
@@ -52,7 +48,7 @@ const CreatureAI = function (_world, _creature) {
                         }
 
                         if (!this.creature.move(x, y)) {
-                            
+
                         }
                         return;
                     }
@@ -74,6 +70,24 @@ const CreatureAI = function (_world, _creature) {
                 _item.x = null;
                 _item.y = null;
             }
+        },
+        canSee: function (_x, _y) {
+            // Is the square further away than I can see?
+            if (Math.pow(this.creature.x-_x, 2) + Math.pow(this.creature.y-_y, 2) > Math.pow(this.creature.visionRadius, 2)) {
+                return false;
+            }
+    
+            let line = Line(this.creature.x, this.creature.y, _x, _y);
+
+            for (let i = 0; i < line.length; i++) {
+                if (this.world.getTile(line[i].x, line[i].y).isTransparent() || line[i].x == _x && line[i].y == _y) {
+                    continue;
+                }
+            
+                return false;
+            }
+        
+            return true;
         },
         update: function () {
             return;

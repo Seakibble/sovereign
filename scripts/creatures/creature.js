@@ -6,9 +6,11 @@ const Creature = function (_world) {
         colour: 'errorRed',
         x: 0,
         y: 0,
+        world: _world,
         ai: null,
         dead: false,
         exp: 1,
+        visionRadius: 10,
         actionsPerTurn: 1,
         currentSpeed: Math.random(), // this is to offset creatures actions, so they don't move in lockstep with each other
         inventory: [],
@@ -56,6 +58,9 @@ const Creature = function (_world) {
             let modifier = Math.floor((score - 10) / 2);
     
             return modifier;
+        },
+        canSee: function (_x, _y) {
+            return this.ai.canSee(_x, _y);
         },
         getWeaponDetails: function () {
             let damage = this.getStatMod("STR");

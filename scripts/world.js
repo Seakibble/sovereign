@@ -1,8 +1,10 @@
 // Tile data object
 const TILE = {
+    UNKNOWN: {name: "UNKNOWN", glyph: " ", colour: "white"},
     BOUNDS: {name: "BOUNDS", glyph: "X", colour: "red"},
-    FLOOR: {name: "FLOOR", glyph: ".", colour: "grey"},
-    WALL: {name: "WALL", glyph: "#", colour: "grey"},
+    FLOOR: {name: "FLOOR", glyph: ".", colour: "lightGrey"},
+    WALL: {name: "WALL", glyph: "#", colour: "lightGrey"},
+
     Tile: function (_type) {
         return {
             name: _type.name,
@@ -11,8 +13,11 @@ const TILE = {
             colour: _type.colour,
             isPassable: function () {
                 return this.name !== "WALL" && this.name !== "BOUNDS"
+            },
+            isTransparent: function () {
+                return this.name !== "WALL" && this.name !== "BOUNDS"
             }
-        }        
+        }
     }
 }
 
@@ -173,6 +178,12 @@ const WorldGen = {
             }
             this.world.tiles[x][this.world.height-1] = TILE.Tile(TILE.WALL);
         }
+    },
+    makeTestRoom: function (_size, _monsters, _loot) {
+        this.randomTiles(_size, _size).smooth();
+        this.addPlayer();
+
+        return this.world;
     },
     makeCaves: function (_size, _monsters, _loot) {
         this.randomTiles(_size, _size).smooth();
