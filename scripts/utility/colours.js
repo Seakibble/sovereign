@@ -1,7 +1,7 @@
 const colours = {
     darkGrey: 'rgb(20,20,20)',
     dullGrey: 'rgb(40,40,40)',
-    grey: 'rgb(160,160,160)',
+    grey: 'rgb(130,130,130)',
     lightGrey: 'rgb(200,200,200)',
     white: 'rgb(255,255,255)',
     paleGreen: 'rgb(130,250,150)',
@@ -11,4 +11,6 @@ const colours = {
     errorRed: 'rgb(255,0,0)',
     yellow: 'rgb(255,255,70)',
     gold: 'rgb(255,215,0)',
+    lightBrown: 'rgb(240,185,120)',
+    brown: 'rgb(190,115,50)',
 };

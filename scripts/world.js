@@ -2,8 +2,8 @@
 const TILE = {
     UNKNOWN: {name: "UNKNOWN", glyph: " ", colour: "white"},
     BOUNDS: {name: "BOUNDS", glyph: "X", colour: "red"},
-    FLOOR: {name: "FLOOR", glyph: ".", colour: "lightGrey"},
-    WALL: {name: "WALL", glyph: "#", colour: "lightGrey"},
+    FLOOR: {name: "FLOOR", glyph: ".", colour: "lightBrown"},
+    WALL: {name: "WALL", glyph: "#", colour: "brown"},
 
     Tile: function (_type) {
         return {

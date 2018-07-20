@@ -11,6 +11,7 @@ const GameScreen = function () {
     screen.targetY = null;
     screen.logStack = [];
     screen.logHistory = [];
+    screen.help = false;
     
     screen.log = function (message) {
         this.logStack.push(message);
@@ -37,6 +38,15 @@ const GameScreen = function () {
     }
 
     screen.input = function (_key) {
+        if (this.help) {
+            this.help = false;
+            document.getElementById("helpScreen").classList.remove("show");
+            
+            return this;
+        }
+
+        
+        
         if ((_key === "Q" && this.logHistory[0].includes("Really quit? (Press Q again to confirm)")) 
         || this.logHistory[0].includes("You have been slain")) {
             return LoseScreen();
@@ -45,6 +55,14 @@ const GameScreen = function () {
         if (_key === "Q") {
             this.log("Really quit? (Press Q again to confirm)");
         }
+
+        if (_key === "?") {
+            this.help = true;
+            document.getElementById("helpScreen").classList.add("show");
+
+            return this;
+        }
+
         return this.updateWorld(_key);
     };
 
@@ -133,6 +151,14 @@ const GameScreen = function () {
         textList.push("");
         textList.push("Location:        " + this.player.x + ", " + this.player.y);
         textList.push("Turn:            " + this.player.turn);
+        textList.push("");
+        textList.push("");
+        textList.push("");
+        textList.push("");
+        textList.push("");
+        textList.push("");
+        textList.push("");
+        textList.push("Press ? at any time for help.");
 
         for (let i = 0; i < textList.length; i++) {
             this.ctx.fillText(textList[i], 20, 20 * i + 125);
@@ -160,7 +186,7 @@ const GameScreen = function () {
                     this.frame[i][j] = getRenderable(this.world.getCreature(hereX, hereY) || this.world.getItem(hereX, hereY) || this.world.getTile(hereX, hereY));
                 } else {
                     this.frame[i][j] = getRenderable(this.player.ai.fov.getTile(hereX, hereY));
-                    this.frame[i][j].colour = "dullGrey";
+                    this.frame[i][j].colour = "grey";
                 }
             }
         }

@@ -1,5 +1,11 @@
 # Sovereign Changlog
 
+## Pre-alpha v0.80 - Feature Release
+* Added help screen.
+* Altered colouration of line of sight to make seeing the rest of the cave easier.
+* Nerfed Kobolds.
+* Expanded weapon system.
+
 ## Pre-alpha v0.70 - Feature Release
 * Line of sight added
 

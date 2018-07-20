@@ -94,32 +94,38 @@ const CreatureAI = function (_world, _creature) {
         },
         attack: function (target) {
             let message = "";
+            let attack = null;
             if (!isNull(this.creature.weapon)) {
-                let attack = this.creature.weapon.attack(this.creature.getWeaponDetails());
-                if (attack.hit >= target.ac) {
-                    if (attack.hit === 100) {
-                        message = "It is an excellent hit! ";
-                    } else {
-                        message = attack.hit + " to Hit | ";
-                    }
-                    message += "The " + this.creature.name + " hits the " + target.name;
-                    if (attack.damage > 0) {
-                        message += ", dealing " + attack.damage + " damage.";
-                        target.takesDamage(attack.damage);
-                    } else {
-                        message += " but deal no damage!";
-                    }
-    
-                } else {
-                    if (attack.hit === -100) {
-                        message = "The " + this.creature.name + " doesn't even come close to hitting the " + target.name + "."
-                    } else {
-                        message = attack.hit + " to Hit | The " + this.creature.name + " misses the " + target.name + ".";
-                    }
-                }
+                attack = this.creature.weapon.attack(this.creature.getWeaponDetails());
             } else {
-                message = "You have no weapon.";
+                attack = {
+                    hit: rollDice("d20"),
+                    damage: 1 + this.creature.getStatMod("STR")
+                };
             }
+
+            if (attack.hit >= target.ac) {
+                if (attack.hit === 100) {
+                    message = "It is an excellent hit! ";
+                } else {
+                    message = attack.hit + " to Hit | ";
+                }
+                message += "The " + this.creature.name + " hits the " + target.name;
+                if (attack.damage > 0) {
+                    message += ", dealing " + attack.damage + " damage.";
+                    target.takesDamage(attack.damage);
+                } else {
+                    message += " but deal no damage!";
+                }
+
+            } else {
+                if (attack.hit === -100) {
+                    message = "The " + this.creature.name + " doesn't even come close to hitting the " + target.name + "."
+                } else {
+                    message = attack.hit + " to Hit | The " + this.creature.name + " misses the " + target.name + ".";
+                }
+            }
+
             game.log(message);
             if (target.chp <= 0) {
                 if (this.creature.type === "player") {

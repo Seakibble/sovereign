@@ -20,14 +20,18 @@ const Kobold = function (_world) {
         wisdom:         7,
         charisma:       8,
     },
-
+    
+    kobold.hitDie = "d6";
     kobold.calculateMHP();
     kobold.restoreCHP();
+    kobold.exp = 2;
 
     /**
      * Creature equipment
      */
     kobold.weapon = Weapon("Dagger");
+    kobold.weapon.addProperty("broken");
+
     if (randomInt(0,10) > 8) {
         kobold.gold = randomInt(0,10);
     }

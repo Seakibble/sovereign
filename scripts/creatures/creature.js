@@ -64,7 +64,8 @@ const Creature = function (_world) {
         },
         getWeaponDetails: function () {
             let damage = this.getStatMod("STR");
-            if (this.weapon.flags.find((el) => el === 'finesse') && damage < this.getStatMod("DEX")) {
+            
+            if (this.weapon.hasProperty('finesse') && damage < this.getStatMod("DEX")) {
                 damage = this.getStatMod("DEX");
                 
             }

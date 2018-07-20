@@ -14,23 +14,33 @@ const Weapon = function (weaponName = null) {
         enhancement: 0,
         damageDice: "",
         flags: [],
-        attack: function (details) {
+        attack: function (_details) {
             let attack = {};
             attack.naturalRoll = rollDice("1d20");
             let damageRoll = rollDice(this.damageDice);
 
             if (attack.naturalRoll === 20) {
                 attack.hit = 100;
-                attack.damage = damageRoll + rollDice(this.damageDice) + this.enhancement + details.damageBonus;
+                attack.damage = damageRoll + rollDice(this.damageDice) + this.enhancement + _details.damageBonus;
             } else if (attack.naturalRoll === 1) {
                 attack.hit = -100;
                 attack.damage = 0;
             } else {
-                attack.hit = attack.naturalRoll + this.enhancement + details.attackBonus;
-                attack.damage = damageRoll + this.enhancement + details.damageBonus;
+                attack.hit = attack.naturalRoll + this.enhancement + _details.attackBonus;
+                attack.damage = damageRoll + this.enhancement + _details.damageBonus;
+            }
+
+            if (this.flags) {
+                attack.damage = Math.floor(attack.damage / 2);
             }
 
             return attack;
+        },
+        addProperty: function (_flag) {
+            this.flags.push(_flag);
+        },
+        hasProperty: function (_flag) {
+            return this.flags.find((el) => el === _flag);
         }
     }
 
@@ -57,6 +67,10 @@ const Weapon = function (weaponName = null) {
     return weapon;
 }
 
+/**
+ * Special weapon flags:
+ *      broken - deals half damage.
+ */
 
 const WEAPON_TABLE = [
     // Simple Melee
